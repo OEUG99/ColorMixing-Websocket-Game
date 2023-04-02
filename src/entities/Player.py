@@ -65,16 +65,17 @@ class Player(GameEntity):
             if not self.cooldown:
                 self.cooldown = True
                 self.velocity = 30
-                self.size -= self.size/4
+                self.size -= int(self.size/4)
                 await asyncio.sleep(8)
                 self.velocity = 15
                 self.cooldown = False
         elif self.color == "cyan":
             if not self.cooldown:
-                self.x += random.randint(-50, 50)
-                self.y += random.randint(-50, 50)
-                self.size -= random.randint(5, int(self.size/4))
-                await asyncio.sleep(5)
+                self.cooldown = True
+                self.x += random.randint(-50, 500)
+                self.y += random.randint(-50, 500)
+                self.size = min(self.size - self.size/4, 5)
+                await asyncio.sleep(15)
                 self.velocity = 15
                 self.cooldown = False
 

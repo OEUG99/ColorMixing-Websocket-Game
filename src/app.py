@@ -14,7 +14,7 @@ app = web.Application()
 sio.attach(app)
 
 # Set up Jinja2 environment for aiohttp
-aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('src/templates'))
+aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
 players = {}  # A dictionary to store players' state
 entities = {}  # A dictionary to store entities' state
