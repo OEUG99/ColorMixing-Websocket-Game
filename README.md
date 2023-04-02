@@ -1,7 +1,7 @@
 # BrowserSocketGame
 A fun demo of how to make browser games via sockets!
 
-Play now via http://beever.xyz:8000/
+Play now via http://beever.xyz/
 Note: multiple people are needed to see how the game works, as its multiplayer. This can be simulated in multiple tabs though if you wanna mess around by yourself.
 
 
