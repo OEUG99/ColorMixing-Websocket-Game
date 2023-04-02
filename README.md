@@ -12,7 +12,7 @@ Game note:
 - Food respawns when consumed, but only within the grid. You can leave the grid, but there is nothing to do outside it.
 
 
-Mixed colors have special abilities...
+Mixed colors have special abilities...-
 
 purple:
 - change your size to random amount, may be larger or smaller.
