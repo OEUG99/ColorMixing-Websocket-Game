@@ -20,7 +20,7 @@ players = {}  # A dictionary to store players' state
 entities = {}  # A dictionary to store entities' state
 
 # Create a bunch of entities
-for i in range(200):
+for i in range(1500):
     entities[i] = Food()
 
 
@@ -70,12 +70,22 @@ async def handle_collisions(player_id, player):
             entities.pop(entity_id)
             break
 
-async def process_movement(player_id, player, direction=None):
-    await player.move(direction)
+async def process_movement(player_id, player, angle=None, direction=None):
+    if angle is not None:
+        await player.moveViaMouse(angle)
+    elif direction is not None:
+        await player.move(direction)
 
     await handle_collisions(player_id, player)
     players[player_id] = player
     await broadcast_update()
+
+@sio.event
+async def player_mouse_movement(sid, data):
+    player_id = sid
+    player = players[player_id]
+    angle = int(data)
+    await process_movement(player_id, player, angle=angle)
 
 @sio.event
 async def player_arrow_movement(sid, data):
@@ -92,4 +102,4 @@ async def broadcast_update():
 app.router.add_get('/', index)
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0', port=80)
+    web.run_app(app, host='0.0.0.0', port=8080)

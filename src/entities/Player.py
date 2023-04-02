@@ -36,23 +36,17 @@ class Player(GameEntity):
 
     async def consume(self, other):
 
-        # max size check
-        if self.size > 100:
-            return
-
-
-
         if isinstance(other, Player):
             if self.size > other.size:
-                self.size += other.size
+                self.size = max(self.size + other.size, 100)
                 self.color = blendColors(self.color, other.color)
                 await other.kill()
             else:
-                other.size += self.size
+                other.size = max(self.size + other.size, 100)
                 other.color = blendColors(self.color, other.color)
                 await self.kill()
         elif isinstance(other, Food):
-            self.size += other.size
+            self.size = max(self.size + other.size, 100)
             self.color = blendColors(self.color, other.color)
             await other.kill()
         else:
@@ -62,7 +56,7 @@ class Player(GameEntity):
         if self.color == "purple":
             if not self.cooldown:
                 self.cooldown = True
-                self.size = random.randint(5, self.size*2)
+                self.size = random.randint(5, int(self.size*2))
                 await asyncio.sleep(120)
                 self.velocity = 15
                 self.cooldown = False
