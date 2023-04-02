@@ -1,0 +1,8 @@
+eventlet~=0.33.3
+Flask~=2.2.3
+Flask-SocketIO~=5.3.3
+Gunicorn~=20.1.0
+Jinja2~=3.1.2
+aiohttp~=3.8.4
+aiohttp_jinja2==1.5.1
+python-socketio~=5.8.0
