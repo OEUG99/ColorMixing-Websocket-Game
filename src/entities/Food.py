@@ -6,7 +6,7 @@ class Food(GameEntity):
     def __init__(self):
         super().__init__(random.randint(-2000, 2000),
                          random.randint(-2000, 2000),
-                         5,
+                         4,
                          randomColor())
 
     async def respawn(self):

@@ -35,16 +35,27 @@ class Player(GameEntity):
         self.y += self.velocity * math.sin(angle)
 
     async def consume(self, other):
+        print(self.size, other.size)
 
         if isinstance(other, Player):
             if self.size > other.size:
+                print('1')
                 self.size = min(self.size + other.size, 100)
                 self.color = blendColors(self.color, other.color)
                 await other.kill()
-            else:
+            elif self.size < other.size:
+                print('2')
                 other.size = min(self.size + other.size, 100)
                 other.color = blendColors(self.color, other.color)
                 await self.kill()
+            elif self.size == other.size:
+                print('3')
+                if self == other:
+                    return
+
+                self.size = min(self.size + other.size, 100)
+                self.color = blendColors(self.color, other.color)
+                await other.kill()
         elif isinstance(other, Food):
             self.size = min(self.size + other.size, 100)
             self.color = blendColors(self.color, other.color)
