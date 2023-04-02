@@ -38,15 +38,15 @@ class Player(GameEntity):
 
         if isinstance(other, Player):
             if self.size > other.size:
-                self.size = max(self.size + other.size, 100)
+                self.size = min(self.size + other.size, 100)
                 self.color = blendColors(self.color, other.color)
                 await other.kill()
             else:
-                other.size = max(self.size + other.size, 100)
+                other.size = min(self.size + other.size, 100)
                 other.color = blendColors(self.color, other.color)
                 await self.kill()
         elif isinstance(other, Food):
-            self.size = max(self.size + other.size, 100)
+            self.size = min(self.size + other.size, 100)
             self.color = blendColors(self.color, other.color)
             await other.kill()
         else:
