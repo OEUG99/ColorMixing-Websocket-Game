@@ -36,6 +36,11 @@ class Player(GameEntity):
 
     async def consume(self, other):
 
+        # max size check
+        if self.size > 100:
+            return
+
+
 
         if isinstance(other, Player):
             if self.size > other.size:

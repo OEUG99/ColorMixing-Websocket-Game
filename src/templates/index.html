@@ -194,21 +194,6 @@
                 socket.emit('player_arrow_movement', movementKey);
             });
 
-        // mouse moving
-        window.addEventListener('mousemove', (event) => {
-            // Get the mouse position
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
-
-            // Calculate the angle between the game character and the mouse position
-            // Assuming game character position is (characterX, characterY)
-            const deltaX = mouseX - characterX;
-            const deltaY = mouseY - characterY;
-            const angle = Math.atan2(deltaY, deltaX);
-
-            // Send the mouse position and angle to the server
-            socket.emit('player_mouse_movement', { x: mouseX, y: mouseY, angle: angle });
-        });
 
 
         // Add event listener for beforeunload event
