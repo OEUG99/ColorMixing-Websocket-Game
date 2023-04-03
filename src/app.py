@@ -20,7 +20,7 @@ players = {}  # A dictionary to store players' state
 entities = {}  # A dictionary to store entities' state
 
 # Create a bunch of entities
-for i in range(1500):
+for i in range(500):
     entities[i] = Food()
 
 
@@ -78,7 +78,6 @@ async def process_movement(player_id, player, angle=None, direction=None):
 
     await handle_collisions(player_id, player)
     players[player_id] = player
-    await broadcast_update()
 
 @sio.event
 async def player_mouse_movement(sid, data):
@@ -94,12 +93,26 @@ async def player_arrow_movement(sid, data):
     direction = data
     await process_movement(player_id, player, direction=direction)
 
+
+async def broadcast_updates_periodically(interval):
+    while True:
+        await broadcast_update()
+        await asyncio.sleep(interval)
+
+
+async def start_periodic_broadcast(app):
+    app['broadcast_task'] = asyncio.create_task(broadcast_updates_periodically(0.1))
+
+
+
 async def broadcast_update():
     players_list = [{'id': player_id, **player.__dict__} for player_id, player in players.items()]
     entities_list = [{'id': entity_id, **entity.__dict__} for entity_id, entity in entities.items()]
     await sio.emit('update', {'players': players_list, 'entities': entities_list}, room=None)
 
 app.router.add_get('/', index)
+app.on_startup.append(start_periodic_broadcast)
+
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0', port=80)
+    web.run_app(app, host='0.0.0.0', port=8000)
