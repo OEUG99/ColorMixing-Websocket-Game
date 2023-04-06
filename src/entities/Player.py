@@ -3,31 +3,31 @@ import math
 import random
 import threading
 from .Food import Food
-from .GameEntity import GameEntity, randomColor, blendColors
+from .BaseEntity import BaseEntity, randomColor, blendColors
 
 
-class Player(GameEntity):
-    def __init__(self):
+class Player(BaseEntity):
+    def __init__(self, sid):
         super().__init__(random.randint(0, 800),
                          random.randint(0, 400), 5, randomColor())
         self.cooldown = False
         self.velocity = 15
+        self.sid = sid
 
-
-    async def move(self, direction):
-        if direction == 'up':
+    async def move(self, keyInput):
+        if keyInput == 'ArrowUp':
             self.y -= self.velocity
 
-        elif direction == 'down':
+        elif keyInput == 'ArrowDown':
             self.y += self.velocity
 
-        elif direction == 'left':
+        elif keyInput == 'ArrowLeft':
             self.x -= self.velocity
 
-        elif direction == 'right':
+        elif keyInput == 'ArrowRight':
             self.x += self.velocity
 
-        elif direction == 'space':
+        elif keyInput == 'space':
             await self.useAbility()
 
     async def moveViaMouse(self, angle):
@@ -67,7 +67,7 @@ class Player(GameEntity):
         if self.color == "purple":
             if not self.cooldown:
                 self.cooldown = True
-                self.size = random.randint(5, int(self.size*2))
+                self.size = random.randint(5, int(self.size * 2))
                 await asyncio.sleep(120)
                 self.velocity = 15
                 self.cooldown = False
@@ -75,7 +75,7 @@ class Player(GameEntity):
             if not self.cooldown:
                 self.cooldown = True
                 self.velocity = 30
-                self.size -= int(self.size/4)
+                self.size -= int(self.size / 4)
                 await asyncio.sleep(8)
                 self.velocity = 15
                 self.cooldown = False
@@ -84,11 +84,10 @@ class Player(GameEntity):
                 self.cooldown = True
                 self.x += random.randint(-50, 500)
                 self.y += random.randint(-50, 500)
-                self.size = min(self.size - self.size/4, 5)
+                self.size = min(self.size - self.size / 4, 5)
                 await asyncio.sleep(15)
                 self.velocity = 15
                 self.cooldown = False
-
 
     async def respawn(self):
         self.x = random.randint(0, 800)

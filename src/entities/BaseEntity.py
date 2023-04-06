@@ -11,8 +11,6 @@ def randomColor():
         return "green"
     elif r == 3:
         return "white"
-
-
 def blendColors(color1, color2):
 
     if color1 == color2:
@@ -45,7 +43,7 @@ def blendColors(color1, color2):
         return "black"
 
 
-class GameEntity:
+class BaseEntity:
     def __init__(self, x, y, size, color):
         self.x = x
         self.y = y
@@ -77,3 +75,10 @@ class GameEntity:
     async def respawn(self):
         self.x = random.randint(-1000, 10000)
         self.y = random.randint(-1000, 10000)
+
+
+
+
+
+
+

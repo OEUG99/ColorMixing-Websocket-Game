@@ -1,17 +1,14 @@
-import math
-import os
-import random
 import asyncio
+
 from aiohttp import web
-import socketio
 import aiohttp_jinja2
 import jinja2
-from entities.Player import Player
-from entities.Food import Food
+from src.entities.Player import Player
+from network.SocketHandler import socketHandler
+from entities.Arena import Arena
 
-sio = socketio.AsyncServer(async_mode='aiohttp')
-app = web.Application()
-sio.attach(app)
+app = socketHandler.app
+sio = socketHandler.sio
 
 # Set up Jinja2 environment for aiohttp
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(['templates']))
@@ -19,9 +16,7 @@ aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(['templates']))
 players = {}  # A dictionary to store players' state
 entities = {}  # A dictionary to store entities' state
 
-# Create a bunch of entities
-for i in range(500):
-    entities[i] = Food()
+arena = Arena(socketHandler)
 
 
 @aiohttp_jinja2.template('index.html')
@@ -31,88 +26,16 @@ async def index(request):
 
 @sio.event
 async def connect(sid, environ):
-    player_id = sid
-    players[player_id] = Player()
-    await broadcast_update()
-    print(f'Client connected - SID: {player_id}')
+    await arena.addEntity(Player(sid))
+    print(f'Client connected - SID: {sid}')
+
 
 @sio.event
-async def disconnect(sid):
-    player_id = sid
-    del players[player_id]
+async def player_disconnect(sid):
     print('Client disconnected')
-    await broadcast_update()
 
-async def handle_collisions(player_id, player):
-    tasks = []
-    for other_id, other_player in players.items():
-        if player_id != other_id:
-            tasks.append(player.check_collision(other_player))
-
-    collisions = await asyncio.gather(*tasks)
-    for idx, collision in enumerate(collisions):
-        if collision:
-            other_id = list(players.keys())[idx]
-            other_player = players[other_id]
-            await player.consume(other_player)
-            break
-
-    tasks = []
-    for entity_id, entity in entities.items():
-        tasks.append(player.check_collision(entity))
-
-    collisions = await asyncio.gather(*tasks)
-    for idx, collision in enumerate(collisions):
-        if collision:
-            entity_id = list(entities.keys())[idx]
-            entity = entities[entity_id]
-            await player.consume(entity)
-            entities.pop(entity_id)
-            break
-
-async def process_movement(player_id, player, angle=None, direction=None):
-    if angle is not None:
-        await player.moveViaMouse(angle)
-    elif direction is not None:
-        await player.move(direction)
-
-    await handle_collisions(player_id, player)
-    players[player_id] = player
-
-@sio.event
-async def player_mouse_movement(sid, data):
-    player_id = sid
-    player = players[player_id]
-    angle = int(data)
-    await process_movement(player_id, player, angle=angle)
-
-@sio.event
-async def player_arrow_movement(sid, data):
-    player_id = sid
-    player = players[player_id]
-    direction = data
-    await process_movement(player_id, player, direction=direction)
-
-
-async def broadcast_updates_periodically(interval):
-    while True:
-        await broadcast_update()
-        await asyncio.sleep(interval)
-
-
-async def start_periodic_broadcast(app):
-    app['broadcast_task'] = asyncio.create_task(broadcast_updates_periodically(0.1))
-
-
-
-async def broadcast_update():
-    players_list = [{'id': player_id, **player.__dict__} for player_id, player in players.items()]
-    entities_list = [{'id': entity_id, **entity.__dict__} for entity_id, entity in entities.items()]
-    await sio.emit('update', {'players': players_list, 'entities': entities_list}, room=None)
 
 app.router.add_get('/', index)
-app.on_startup.append(start_periodic_broadcast)
-
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0', port=8000)
+    web.run_app(app, host='0.0.0.0', port=8005)

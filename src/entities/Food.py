@@ -1,8 +1,8 @@
 import random
-from . import GameEntity, randomColor
+from . import BaseEntity, randomColor
 
 
-class Food(GameEntity):
+class Food(BaseEntity):
     def __init__(self):
         super().__init__(random.randint(-2000, 2000),
                          random.randint(-2000, 2000),

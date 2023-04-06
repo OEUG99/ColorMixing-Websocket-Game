@@ -6,3 +6,4 @@ Jinja2~=3.1.2
 aiohttp~=3.8.4
 aiohttp_jinja2==1.5.1
 python-socketio~=5.8.0
+setuptools~=67.4.0
